@@ -8,7 +8,7 @@ from fastapi import HTTPException
 import datetime
 load_dotenv()
 
-database_url = os.getenv("database_url")
+database_url = os.getenv("DATABASE_URL")
 
 engine = create_async_engine(database_url)
 

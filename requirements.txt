@@ -10,3 +10,4 @@ httpx>=0.28.1
 pytest-asyncio>=1.4.1
 alembic>=1.20.1
 dotenv>=0.9.9
+aiomysql>=0.3.2

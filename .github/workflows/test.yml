@@ -26,6 +26,6 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL: ${{ secrets.database_url }}
         run: |
           python -m pytest

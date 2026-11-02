@@ -7,8 +7,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from httpx import AsyncClient, ASGITransport
 
-from app.main import app
-from app.database_tools.database import Base, get_db, User
+from tg_app.main import app
+from tg_app.database_tools.database import Base, get_db, User
 
 engine = create_async_engine(
     "sqlite+aiosqlite:///:memory:"

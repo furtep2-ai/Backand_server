@@ -1,11 +1,11 @@
 from fastapi import FastAPI, APIRouter, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from tg_app.routers.get_data import router as get_data_router
-from tg_app.routers.insert_data import router as insert_folder_router
-from tg_app.routers.registration_login import router as login_router
-from tg_app.routers.folders_manage import router as folder_manage_router
-from tg_app.routers.photos_manage import router as photo_manage_router
-from tg_app.database_tools.database import AsyncSession, AsyncSessionLocal
+from app.routers.get_data import router as get_data_router
+from app.routers.insert_data import router as insert_folder_router
+from app.routers.registration_login import router as login_router
+from app.routers.folders_manage import router as folder_manage_router
+from app.routers.photos_manage import router as photo_manage_router
+from app.database_tools.database import AsyncSession, AsyncSessionLocal
 
 router = APIRouter(prefix="/api", tags=["Photos"])
 
@@ -23,7 +23,7 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "FastAPI бэкенды сәтті жұмыс істеп тұр!"}
-from tg_app.database_tools.database import engine, Base
+from app.database_tools.database import engine, Base
 
 @app.on_event("startup")
 async def startup():

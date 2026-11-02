@@ -29,7 +29,6 @@ async def test_photo_success_flow(client):
         }
     )
     
-    # 1. Алдымен қажетті папканы құрып аламыз (POST /api/folders)
     folder_response = await client.post(
         "/api/folders",
         json={
@@ -42,9 +41,8 @@ async def test_photo_success_flow(client):
     
     assert folder_response.status_code == 200
     folder_data = folder_response.json()
-    folder_id = folder_data["folder_id"]  # База генерациялаған нақты ID-ді аламыз
+    folder_id = folder_data["folder_id"]  
 
-    # 2. Сол алынған folder_id арқылы фото қосамыз (POST /api/photos)
     post_response = await client.post(
         "/api/photos",
         json={
@@ -57,19 +55,16 @@ async def test_photo_success_flow(client):
     assert post_data["message"] == "Фото успешно добавлено!"
     photo_id = post_data["photo_id"]
 
-    # 3. Фотоны ID арқылы алып тексереміз (GET /api/photos/{photo_id})
     get_response = await client.get(f"/api/photos/{photo_id}")
     assert get_response.status_code == 200
     get_data = get_response.json()
     assert get_data["status"] == "success"
     assert get_data["file_id"] == "AgACAgIAAxkBA_real_photo_id"
 
-    # 4. Фотоны өшіреміз (DELETE /api/photos/{photo_id})
     delete_response = await client.delete(f"/api/photos/{photo_id}")
     assert delete_response.status_code == 200
     assert delete_response.json()["status"] == "success"
 
-    # 5. Өшірілгеннен кейін қайта сұрағанда 404 шығуын тексеру
     check_response = await client.get(f"/api/photos/{photo_id}")
    
     assert check_response.status_code == 404

@@ -1,16 +1,13 @@
 from pydantic import BaseModel
 
-# 1. Жаңа папка құру үшін клиенттен келетін деректер
 class FolderCreate(BaseModel):
     name: str
     user_id: int
 
-# 2. Папкаға жаңа фото қосу үшін клиенттен келетін деректер
 class PhotoCreate(BaseModel):
     file_url: str
     folder_id: int
 
-# 3. Базадан папканы қайтарған кездегі формат (Response)
 class FolderResponse(BaseModel):
     id: int
     name: str
@@ -19,7 +16,7 @@ class FolderResponse(BaseModel):
     class Config:
         from_attributes = True
 
-# 4. Базадан фотоны қайтарған кездегі формат (Response)
+
 class PhotoResponse(BaseModel):
     id: int
     file_url: str

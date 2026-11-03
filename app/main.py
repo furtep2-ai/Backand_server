@@ -5,7 +5,18 @@ from app.routers.insert_data import router as insert_folder_router
 from app.routers.registration_login import router as login_router
 from app.routers.folders_manage import router as folder_manage_router
 from app.routers.photos_manage import router as photo_manage_router
-from app.database_tools.database import AsyncSession, AsyncSessionLocal
+from app.routers.admin_routers.all_users import router as all_users_router
+import cloudinary
+from dotenv import load_dotenv
+import os
+load_dotenv()
+
+cloudinary.config( 
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"), 
+    api_key=os.getenv("CLOUDINARY_API_KEY"), 
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
 router = APIRouter(prefix="/api", tags=["Photos"])
 
@@ -35,3 +46,4 @@ app.include_router(insert_folder_router)
 app.include_router(login_router)
 app.include_router(folder_manage_router)
 app.include_router(photo_manage_router)
+app.include_router(all_users_router)

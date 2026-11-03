@@ -1,4 +1,5 @@
 import pytest
+from app.database_tools.jwt_token import create_access_token
 
 @pytest.mark.anyio
 async def test_change_folder_success(client):
@@ -11,12 +12,14 @@ async def test_change_folder_success(client):
         }
     )
 
+    token = await create_access_token(data={"sub": "1"})
+
     folder_response = await client.post(
         "/api/folders",
         json={
-            "name": "Old Folder",
-            "user_id": 1
-        }
+            "name": "Old Folder"
+        },
+        headers={"Authorization": f"Bearer {token}"}
     )
 
     folder_id = folder_response.json()["folder_id"]
@@ -24,10 +27,9 @@ async def test_change_folder_success(client):
     response = await client.put(
         f"/api/folders/{folder_id}",
         json={
-            "folder_id": folder_id,
-            "user_id": 1,
             "new_folder_name": "New Folder"
-        }
+        },
+        headers={"Authorization": f"Bearer {token}"}
     )
 
     assert response.status_code == 200
@@ -39,13 +41,14 @@ async def test_change_folder_success(client):
 
 @pytest.mark.anyio
 async def test_change_folder_not_found(client):
+    token = await create_access_token(data={"sub": "1"})
     response = await client.put(
         "/api/folders/999",
         json={
             "folder_id": 999,
-            "user_id": 1,
             "new_folder_name": "New Folder"
-        }
+        },
+        headers={"Authorization": f"Bearer {token}"}
     )
 
     assert response.status_code == 404
@@ -61,7 +64,7 @@ async def test_change_folder_forbidden(client):
             "time_zone": "Asia/Almaty"
         }
     )
-
+    
     await client.post(
         "/api/user/2",
         json={
@@ -71,27 +74,29 @@ async def test_change_folder_forbidden(client):
         }
     )
 
+    token_1 = await create_access_token(data={"sub": "1"})
+    
     folder_response = await client.post(
         "/api/folders",
         json={
-            "name": "Private Folder",
-            "user_id": 1
-        }
+            "name": "Private Folder"
+        },
+        headers={"Authorization": f"Bearer {token_1}"}
     )
-
+    
     folder_id = folder_response.json()["folder_id"]
+
+    token_2 = await create_access_token(data={"sub": "2"})
 
     response = await client.put(
         f"/api/folders/{folder_id}",
         json={
-            "folder_id": folder_id,
-            "user_id": 2,
             "new_folder_name": "Hack Folder"
-        }
+        },
+        headers={"Authorization": f"Bearer {token_2}"} 
     )
-
+    
     assert response.status_code == 403
-    assert response.json()["detail"] == "У вас нет прав на изменение этой папки!"
 
 @pytest.mark.anyio
 async def test_delete_folder_success(client):
@@ -108,8 +113,7 @@ async def test_delete_folder_success(client):
         "/api/folders",
         json={
             "name": "Delete Folder",
-            "user_id": 1
-        }
+        },
     )
 
     folder_id = folder_response.json()["folder_id"]
@@ -131,13 +135,15 @@ async def test_delete_folder_success(client):
 
 @pytest.mark.anyio
 async def test_delete_folder_not_found(client):
+    token = await create_access_token(data={"sub": "1"})
     response = await client.request(
         "DELETE",
         "/api/folders/999",
         json={
             "folder_id": 999,
             "user_id": 1
-        }
+        },
+        headers={"Authorization": f"Bearer {token}"}
     )
 
     assert response.status_code == 404
@@ -162,25 +168,28 @@ async def test_delete_folder_forbidden(client):
             "time_zone": "Asia/Almaty"
         }
     )
+    token_1 = await create_access_token(data={"sub": "1"})
 
     folder_response = await client.post(
         "/api/folders",
         json={
             "name": "Private Folder",
-            "user_id": 1
-        }
+        },
+        headers={"Authorization": f"Bearer {token_1}"}
     )
 
     folder_id = folder_response.json()["folder_id"]
+
+    token_2 = await create_access_token(data={"sub": "2"})
 
     response = await client.request(
         "DELETE",
         f"/api/folders/{folder_id}",
         json={
             "folder_id": folder_id,
-            "user_id": 2
-        }
+        },
+        headers={"Authorization": f"Bearer {token_2}"}
     )
 
     assert response.status_code == 403
-    assert response.json()["detail"] == "У вас нет прав на изменение этой папки!"
+    assert response.json()["detail"] == "У вас нет прав на удаление этой папки!"

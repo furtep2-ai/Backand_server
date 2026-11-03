@@ -2,10 +2,8 @@ from pydantic import BaseModel
 
 class FolderCreate(BaseModel):
     name: str
-    user_id: int
 
 class PhotoCreate(BaseModel):
-    file_url: str
     folder_id: int
 
 class FolderResponse(BaseModel):
@@ -40,10 +38,13 @@ class FolderGet(BaseModel):
     user_id: int
 
 class FolderUpdate(BaseModel):
-    user_id: int
     new_folder_name: str
 
 class TimezoneNew(BaseModel):
     new_time_zone: str
+
+class LoginSchema(BaseModel):
+    user_id: int
+
 
 

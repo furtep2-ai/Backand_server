@@ -8,13 +8,25 @@ from fastapi import HTTPException
 import datetime
 load_dotenv()
 
-database_url = os.getenv("DATABASE_URL")
+import ssl
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 
-engine = create_async_engine(database_url)
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+ssl_context = ssl.create_default_context()
+ssl_context.check_hostname = False
+ssl_context.verify_mode = ssl.CERT_NONE
+
+engine = create_async_engine(
+    DATABASE_URL,
+    connect_args={"ssl": ssl_context},
+    pool_pre_ping=True,
+    pool_recycle=3600,
+)
 
 AsyncSessionLocal = async_sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
+    bind=engine, 
+    class_=AsyncSession, 
     expire_on_commit=False
 )
 

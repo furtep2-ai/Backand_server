@@ -1,16 +1,16 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.database_tools.database import AsyncSessionLocal, Folder, get_db, commit_or_rollback, Photo
+from app.database_tools.database import AsyncSessionLocal, Folder, get_db, commit_or_rollback, Photo, User
 from typing import Any
-from app.database_tools.schemas import FolderGet
+from app.database_tools.jwt_token import get_current_user
 from fastapi import HTTPException, Query
 
 router = APIRouter(prefix="/api", tags=["Get Folders & Photos"])
 
-@router.get("/user/{user_id}/folders")
-async def get_folders(user_id: int, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Folder).filter(Folder.folder_user_id == user_id))
+@router.get("/folders")
+async def get_folders(current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Folder).filter(Folder.folder_user_id == current_user.user_id))
     folders = result.scalars().all()
     
     if not folders:
@@ -26,7 +26,19 @@ async def get_folders(user_id: int, db: AsyncSession = Depends(get_db)):
     ]
 
 @router.get("/folders/{folder_id}/photos")
-async def get_folder_photos(folder_id: int, db: AsyncSession = Depends(get_db)) -> Any:
+async def get_folder_photos(
+    folder_id: int, 
+    current_user: User = Depends(get_current_user), 
+    db: AsyncSession = Depends(get_db)
+) -> Any:
+    folder_result = await db.execute(
+        select(Folder).filter(Folder.folder_id == folder_id, Folder.folder_user_id == current_user.user_id)
+    )
+    folder = folder_result.scalars().first()
+    
+    if not folder:
+        raise HTTPException(status_code=404, detail="Папка не найдена или у вас нет доступа!")
+
     result = await db.execute(select(Photo).filter(Photo.folder_id == folder_id))
     photos = result.scalars().all()
 
@@ -46,7 +58,7 @@ async def get_folder_photos(folder_id: int, db: AsyncSession = Depends(get_db)) 
 @router.get("/folder/{folder_id}")
 async def get_folder(
     folder_id: int, 
-    user_id: int = Query(..., description="Қолданушының ID-і"), 
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Any:
     folder = await db.get(Folder, folder_id)
@@ -54,7 +66,7 @@ async def get_folder(
     if not folder:
         raise HTTPException(status_code=404, detail="Папка не найдена!")
             
-    if folder.folder_user_id != user_id:
+    if folder.folder_user_id != current_user.user_id:
         raise HTTPException(status_code=403, detail="У вас нет прав на просмотр этой папки!")
 
     return {

@@ -109,21 +109,28 @@ async def test_delete_folder_success(client):
         }
     )
 
+    token = await create_access_token(
+        data={"sub": "1"}
+    )
+
     folder_response = await client.post(
         "/api/folders",
         json={
-            "name": "Delete Folder",
+            "name": "Delete Folder"
         },
+        headers={
+            "Authorization": f"Bearer {token}"
+        }
     )
+
+    assert folder_response.status_code == 200
 
     folder_id = folder_response.json()["folder_id"]
 
-    response = await client.request(
-        "DELETE",
+    response = await client.delete(
         f"/api/folders/{folder_id}",
-        json={
-            "folder_id": folder_id,
-            "user_id": 1
+        headers={
+            "Authorization": f"Bearer {token}"
         }
     )
 
@@ -132,6 +139,7 @@ async def test_delete_folder_success(client):
     data = response.json()
 
     assert data["status"] == "success"
+
 
 @pytest.mark.anyio
 async def test_delete_folder_not_found(client):

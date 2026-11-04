@@ -13,7 +13,7 @@ router = APIRouter(prefix="/api/admin",tags=["Admin"])
 @router.get("/users/{user_id}/stats")
 async def get_user_stats(
     user_id: int,
-    #admin: User = Depends(get_current_admin_user),
+    admin: User = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db)
 ):
     user = await db.get(User, user_id)

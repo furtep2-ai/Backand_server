@@ -21,8 +21,8 @@ async def get_current_admin_user(current_user: User = Depends(get_current_user))
 
 @router.get("/users", response_model=UsersResponse)
 async def get_all_users(
-    db: AsyncSession = Depends(get_db)
-    #admin_user: User = Depends(get_current_admin_user) 
+    db: AsyncSession = Depends(get_db),
+    admin_user: User = Depends(get_current_admin_user) 
 ) -> UsersResponse:
     result = await db.execute(select(User))
     users = result.scalars().all()

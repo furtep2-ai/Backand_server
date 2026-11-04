@@ -10,7 +10,7 @@ router = APIRouter(prefix="/api/admin",tags=["Admin"])
 
 @router.get("/folders")
 async def get_all_folders(
-    #admin: User = Depends(get_current_admin_user),
+    admin: User = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db)
 ):
     result = await db.execute(

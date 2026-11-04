@@ -6,6 +6,15 @@ from app.routers.registration_login import router as login_router
 from app.routers.folders_manage import router as folder_manage_router
 from app.routers.photos_manage import router as photo_manage_router
 from app.routers.admin_routers.all_users import router as all_users_router
+from app.routers.admin_routers.get_folders import router as get_folders_router
+from app.routers.admin_routers.get_user import router as get_user_router
+from app.routers.admin_routers.remove_admin import router as remove_admin_router
+from app.routers.admin_routers.make_admin import router as make_admin_router
+from app.routers.admin_routers.delete_folders import router as delete_folders_router
+from app.routers.admin_routers.delete_photo import router as delete_photo_router
+from app.routers.admin_routers.get_photos import router as get_photos_router
+from app.routers.admin_routers.stats import router as stats_router
+from app.routers.admin_routers.delete_user import router as delete_user_router
 import cloudinary
 from dotenv import load_dotenv
 import os
@@ -47,3 +56,12 @@ app.include_router(login_router)
 app.include_router(folder_manage_router)
 app.include_router(photo_manage_router)
 app.include_router(all_users_router)
+app.include_router(remove_admin_router)
+app.include_router(make_admin_router)
+app.include_router(delete_folders_router)
+app.include_router(delete_photo_router)
+app.include_router(get_photos_router)
+app.include_router(get_user_router)
+app.include_router(get_folders_router)
+app.include_router(stats_router)
+app.include_router(delete_user_router)

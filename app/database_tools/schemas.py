@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, config, ConfigDict
+from typing import Literal
+
 
 class FolderCreate(BaseModel):
     name: str
@@ -45,6 +47,18 @@ class TimezoneNew(BaseModel):
 
 class LoginSchema(BaseModel):
     user_id: int
+
+class UserResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    user_id: int
+    user_name: str
+    is_admin: bool
+    time_zone: str
+
+class UsersResponse(BaseModel):
+    status: Literal["success"]
+    users: list[UserResponse]
 
 
 
